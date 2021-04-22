@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inherit_res_config_settings_form_view_activity_statement" model="ir.ui.view">
+        <field name="name">res.config.settings.activity.statement.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <div id="analytic" position="after">
+                <h2>Activity Statement Scheduler Settings</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="automatic_statement" widget="upgrade_boolean"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <span class='o_form_label'>Turn On automatic statements</span>
+                            <div class="text-muted">
+                                Activity Statement Scheduler will send Statement.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 o_setting_box" attrs="{'invisible':[('automatic_statement','=',False)]}">
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 o_setting_box" title="Title 123" attrs="{'invisible': [('automatic_statement', '=', False)]}">
+                        <div class="o_setting_right_pane">
+                            <span class='o_form_label'>Cron Next Call Date</span>
+<!--                            <label string='Cron Next Call Date'/>-->
+                            <div class="text-muted">
+                                The Statement will be sent every month to Partner on Cron Next Call Date.
+                            </div>
+                            <div class="content-group">
+                                <div class="row">
+<!--                                    <span class='o_form_label'>Cron Next Call Date</span>-->
+                                    <label string="Cron Next Call Date" for="cron_next_call_date" class="col-md-5"/>
+                                    <field name="cron_next_call_date"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+<!--                            <label string="Send Options"/>-->
+                            <span class='o_form_label'>Send Options</span>
+                             <div class="content-group">
+                                <field name="send_to_options" class="o_light_label mt16" widget="radio"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+<!--                            <label string='Default Statement Period'/>-->
+                            <span class='o_form_label'>Default Statement Period</span>
+                            <div class="text-muted">
+                                <br/>
+                            </div>
+
+                            <div class="content-group" style="margin-left:10px;">
+                                <div class="row">
+                                    <label for="statement_period_setting" class="col-md-5"/>
+<!--                                    <span class='o_form_label'>Send Options</span>-->
+                                    <br/>
+                                    <field name="statement_period_setting" widget="radio" class="col-md-5" style="margin-top:20px;"/>
+                                </div>
+                            </div>
+
+
+                            <div class="content-group">
+                                <div class="row">
+                                    <label string="Statement Period" for="cron_next_call_date" class="col-md-5"/>
+                                    <field name="new_default_statement_period"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="excl_fully_allocated_invoices" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <span class='o_form_label'>Exclude Fully Allocated Invoices</span>
+<!--                            <label string='Exclude Fully Allocated Invoices'/>-->
+                            <div class="text-muted">
+                                It will not consider Payments which are Paid.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <br/>
+                        <div class="o_setting_right_pane">
+                            <div class="text-muted">
+                                <br/>
+                            </div>
+                            <div class="content-group">
+                                <div class="row">
+                                    <label string="Mode" for="mode" class="col-md-5"/>
+                                    <field name="mode"/>
+                                </div>
+                                <div class="row">
+                                    <label string="Test Email Address" for="test_email_address" class="col-md-5"/>
+                                    <field name="test_email_address"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="automatic_payment_reminder" />
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <span class='o_form_label'>Turn on Automatic Payment Reminders</span>
+<!--                            <label string='Turn on Automatic Payment Reminders'/>-->
+                            <div class="text-muted">
+                                Payment reminders will be sent to customers with an outstanding balance.
+                            </div>
+                        </div>
+                        <div class="o_setting_right_pane" attrs="{'invisible':[('automatic_payment_reminder','=',False)]}">
+<!--                            <label string='Payment Reminder Date'/>-->
+                            <span class='o_form_label'>Payment Reminder Date</span>
+                            <div class="text-muted">
+                                Payment reminders will be sent to customers with an outstanding balance on this date.
+                            </div>
+                        </div>
+                        <div class="o_setting_right_pane" attrs="{'invisible':[('automatic_payment_reminder','=',False)]}">
+                        <div class="content-group">
+                            <div class="row">
+                                <label string="Payment Reminder Date" for="payment_reminder_date" class="col-md-5"/>
+                                <field name="payment_reminder_date"/>
+                            </div>
+                            <div class="row">
+                                <label string="Payment Reminder Email Template" for="payment_reminder_email_template_ids" class="col-md-5"/>
+                                <field name="payment_reminder_email_template_ids"/>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+<!--            </xpath>-->
+            </div>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="account.account_reports_legal_statements_menu" name="Generic Statements"
+                  parent="account.menu_finance_reports" sequence="1"
+                  groups="account.group_account_manager"/>
+
+        <menuitem id="account_reports.account_reports_audit_reports_menu" name="Audit Reports"
+                  parent="account.menu_finance_reports" sequence="3"
+                  groups="account.group_account_manager"/>
+
+        <menuitem id="account.account_reports_management_menu" name="Management"
+                  groups="account.group_account_manager" sequence="4"/>
+
+        <template id="external_layout_DMX">
+            <div class="header" style="">
+                <div class="row">
+                    <center>
+                        <img src="/dmx/static/src/img/Header.png" style="max-height: 150px; width: 100%"/>
+                    </center>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <h4>
+                            <span t-field="company.partner_id.name" style="font-weight: bold;"/>
+                        </h4>
+                        <t t-if="company.company_registry">
+                            Company Reg. No
+                            <span t-field="company.company_registry"/>
+                        </t>
+                        <t t-if="company.vat">
+                            <t t-esc="company.country_id.vat_label or 'VAT No '"/>
+                            <span t-field="company.vat"/>
+                        </t>
+                        <span t-field="company.partner_id"
+                              t-field-options='{
+                                  "widget": "contact",
+                                  "fields": ["email", "phone", "vat", "address"],
+                                  "no_marker": true}'
+                              style="border-bottom: 1px solid black; display:inline-block;"/>
+                    </div>
+                    <t t-if="docs">
+                        <div class="col-xs-4 col-xs-offset-2" style="margin-top:10px">
+                            <t t-if="docs._name == 'dmx.batch.invoice'">
+                                <div class="row" style="height: 50px; background-color: gray;border:2px solid black ">
+                                    <center>
+                                        <b>
+                                            <h4 style="color: #ffffff;margin-top: 10px !important">INVOICED TO</h4>
+                                        </b>
+                                    </center>
+                                </div>
+                                <div class="row" style="margin-top: 10px;border:2px solid black">
+                                    <div style="margin-left: 20px;">
+                                        <b>
+                                            <p>
+                                                <t t-esc="docs.customer.name"/>
+                                            </p>
+                                        </b>
+                                        <t t-if="not docs.customer.child_ids">
+                                            <t t-set='customer_addre' t-value='docs.get_customer_addre(docs.customer)' />
+                                            <span t-field='customer_addre.street'></span>
+                                            <br/>
+                                            <span t-field='customer_addre.street2'></span>
+                                            <br/>
+                                            <span t-field='customer_addre.city'></span>
+                                            <span t-field='customer_addre.state_id.name'></span>
+                                            <span t-field='customer_addre.zip'></span>
+                                            <br/>
+                                            <span t-field='customer_addre.country_id.name'></span>
+                                            <br/>
+                                        </t>
+                                        <t t-if="docs.customer.child_ids">
+                                            <t t-if="docs.customer.child_ids[0] and docs.customer.child_ids[0].type == 'invoice'">
+                                                <t t-set='customer_addre' t-value='docs.get_customer_addre(docs.customer.child_ids[0])' />
+                                                <span t-esc="customer_addre.street"></span>
+                                                <br/>
+                                                <span t-esc="customer_addre.street2"></span>
+                                                <br/>
+                                                <span t-esc="customer_addre.city"></span>
+                                                <span t-esc="customer_addre.state_id.name"></span>
+                                                <span t-esc="customer_addre.zip"></span>
+                                                <br/>
+                                                <span t-esc="customer_addre.country_id.name"></span>
+                                                <br/>
+                                            </t>
+                                            <t t-if="docs.customer.child_ids[0] and docs.customer.child_ids[0].type != 'invoice'">
+                                                <t t-set='customer_addre' t-value='docs.get_customer_addre(docs.customer)' />
+                                                <span t-field='customer_addre.street'></span>
+                                                <br/>
+                                                <span t-field='customer_addre.street2'></span>
+                                                <br/>
+                                                <span t-field='customer_addre.city'></span>
+                                                <span t-field='customer_addre.state_id.name'></span>
+                                                <span t-field='customer_addre.zip'></span>
+                                                <br/>
+                                                <span t-field='customer_addre.country_id.name'></span>
+                                                <br/>
+                                            </t>
+                                        </t>
+                                        <t t-if="docs.customer.company_registration_number">
+                                            <span>Company Reg:
+                                                <t t-esc="docs.customer.company_registration_number"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <t t-if="docs.customer.vat">
+                                            <span>VAT NO:
+                                                <t t-esc="docs.customer.vat"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <t t-if="docs.customer.ref">
+                                            <span>Customer NO:
+                                                <b>
+                                                    <t t-esc="docs.customer.ref"/>
+                                                </b>
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-if="docs._name == 'account.invoice'">
+                                <div class="row" style="height: 50px; background-color: gray;border:2px solid black ">
+                                    <center>
+                                        <b>
+                                            <h4 style="color: #ffffff;margin-top: 10px !important">INVOICED TO</h4>
+                                        </b>
+                                    </center>
+                                </div>
+                                <div class="row" style="margin-top: 10px;border:2px solid black">
+                                    <div style="margin-left: 20px;">
+                                        <b>
+                                            <p>
+                                                <t t-esc="docs.partner_id.name"/>
+                                            </p>
+                                        </b>
+                                        <t t-if="not docs.partner_id.child_ids">
+                                            <span t-field='docs.partner_id.street'></span>
+                                            <br/>
+                                            <span t-field='docs.partner_id.street2'></span>
+                                            <br/>
+                                            <span t-field='docs.partner_id.city'></span>
+                                            <span t-field='docs.partner_id.state_id.name'></span>
+                                            <span t-field='docs.partner_id.zip'></span>
+                                            <br/>
+                                            <span t-field='docs.partner_id.country_id.name'></span>
+                                            <br/>
+                                        </t>
+                                        <t t-if="docs.partner_id.child_ids">
+                                            <t t-set="invoice_address" t-value="docs.partner_id.child_ids.filtered(lambda l:l.type == 'invoice')"/>
+                                            <!--<t t-set="i" t-value="0"/>-->
+                                            <!--<t t-foreach="docs.partner_id.child_ids" t-as="each_contact">-->
+                                            <!--    <t t-if="each_contact.type == 'invoice'">-->
+                                            <!--        <t t-set="index" t-value="i"/>-->
+                                            <!--    </t>-->
+                                            <!--    <t t-set="i" t-value="i + 1"/>-->
+                                            <!--</t>-->
+                                            <t t-if="invoice_address">
+                                                <span t-esc="invoice_address[0].street"/>
+                                                <br/>
+                                                <span t-esc="invoice_address[0].street2"/>
+                                                <br/>
+                                                <span t-esc="invoice_address[0].city"/>
+                                                <span t-esc="invoice_address[0].state_id.name"/>
+                                                <span t-esc="invoice_address[0].zip"/>
+                                                <br/>
+                                                <span t-esc="invoice_address[0].country_id.name"/>
+                                                <br/>
+                                            </t>
+                                            <t t-if="not invoice_address">
+                                                <span t-field="docs.partner_id.street"/>
+                                                <br/>
+                                                <span t-field="docs.partner_id.street2"/>
+                                                <br/>
+                                                <span t-field="docs.partner_id.city"/>
+                                                <span t-field="docs.partner_id.state_id.name"/>
+                                                <span t-field="docs.partner_id.zip"/>
+                                                <br/>
+                                                <span t-field="docs.partner_id.country_id.name"/>
+                                                <br/>
+                                            </t>
+
+                                        </t>
+                                        <t t-if="docs.partner_id.company_registration_number">
+                                            <span>Company Reg:
+                                                <t t-esc="docs.partner_id.company_registration_number"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <t t-if="docs.partner_id.vat">
+                                            <span>VAT NO:
+                                                <t t-esc="docs.partner_id.vat"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <t t-if="docs.partner_id.ref">
+                                            <span>Customer NO:
+                                                <b>
+                                                    <t t-esc="docs.partner_id.ref"/>
+                                                </b>
+                                            </span>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-if="docs._name == 'res.partner'">
+                                <div class="row" style="margin-top: 10px;border:2px solid black">
+                                    <div style="margin-left: 20px;">
+                                        <b>
+                                            <p style="padding-top:5px">
+                                                <strong>
+                                                    <t t-esc="docs.name"/>
+                                                </strong>
+                                            </p>
+                                        </b>
+                                        <t t-if="not docs.child_ids">
+                                            <span t-field='docs.street'></span>
+                                            <br/>
+                                            <span t-field='docs.street2'></span>
+                                            <br/>
+                                            <span t-field='docs.city'></span>
+                                            <span t-field='docs.state_id.name'></span>
+                                            <span t-field='docs.zip'></span>
+                                            <br/>
+                                            <span t-field='docs.country_id.name'></span>
+                                            <br/>
+                                        </t>
+                                        <t t-if="docs.child_ids">
+                                            <t t-set="invoice_address" t-value="docs.child_ids.filtered(lambda l:l.type == 'invoice')"/>
+                                            <t t-if="invoice_address">
+                                                <span t-esc="invoice_address[0].street"></span>
+                                                <br/>
+                                                <span t-esc="invoice_address[0].street2"></span>
+                                                <br/>
+                                                <span t-esc="invoice_address[0].city"></span>
+                                                <span t-esc="invoice_address[0].state_id.name"></span>
+                                                <span t-esc="invoice_address[0].zip"></span>
+                                                <br/>
+                                                <span t-esc="invoice_address[0].country_id.name"></span>
+                                                <br/>
+                                            </t>
+                                            <t t-if="not invoice_address">
+                                                <span t-field='docs.street'></span>
+                                                <br/>
+                                                <span t-field='docs.street2'></span>
+                                                <br/>
+                                                <span t-field='docs.city'></span>
+                                                <span t-field='docs.state_id.name'></span>
+                                                <span t-field='docs.zip'></span>
+                                                <br/>
+                                                <span t-field='docs.country_id.name'></span>
+                                                <br/>
+                                            </t>
+                                        </t>
+                                        <t t-if="docs.company_registration_number">
+                                            <span>Company Reg:
+                                                <t t-esc="docs.company_registration_number"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <t t-if="docs.vat">
+                                            <span>VAT NO:
+                                                <t t-esc="docs.vat"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-if="docs._name == 'sale.order'">
+                                <div class="row" style="margin-top: 10px;border:2px solid black">
+                                    <div style="margin-left: 20px;">
+                                        <b>
+                                            <p style="padding-top:5px">
+                                                <strong>
+                                                    <t t-esc="docs.name"/>
+                                                </strong>
+                                            </p>
+                                        </b>
+                                        <t t-if="docs.partner_id">
+                                            <span t-field='docs.partner_id.street'></span>
+                                            <br/>
+                                            <span t-field='docs.partner_id.street2'></span>
+                                            <br/>
+                                            <span t-field='docs.partner_id.city'></span>
+                                            <span t-field='docs.partner_id.state_id.name'></span>
+                                            <span t-field='docs.partner_id.zip'></span>
+                                            <br/>
+                                            <span t-field='docs.partner_id.country_id.name'></span>
+                                            <br/>
+                                        </t>
+<!--                                        <t t-if="docs.child_ids">-->
+<!--                                            <t t-set="invoice_address" t-value="docs.child_ids.filtered(lambda l:l.type == 'invoice')"/>-->
+<!--                                            <t t-if="invoice_address">-->
+<!--                                                <span t-esc="invoice_address[0].street"></span>-->
+<!--                                                <br/>-->
+<!--                                                <span t-esc="invoice_address[0].street2"></span>-->
+<!--                                                <br/>-->
+<!--                                                <span t-esc="invoice_address[0].city"></span>-->
+<!--                                                <span t-esc="invoice_address[0].state_id.name"></span>-->
+<!--                                                <span t-esc="invoice_address[0].zip"></span>-->
+<!--                                                <br/>-->
+<!--                                                <span t-esc="invoice_address[0].country_id.name"></span>-->
+<!--                                                <br/>-->
+<!--                                            </t>-->
+<!--                                            <t t-if="not invoice_address">-->
+<!--                                                <span t-field='docs.street'></span>-->
+<!--                                                <br/>-->
+<!--                                                <span t-field='docs.street2'></span>-->
+<!--                                                <br/>-->
+<!--                                                <span t-field='docs.city'></span>-->
+<!--                                                <span t-field='docs.state_id.name'></span>-->
+<!--                                                <span t-field='docs.zip'></span>-->
+<!--                                                <br/>-->
+<!--                                                <span t-field='docs.country_id.name'></span>-->
+<!--                                                <br/>-->
+<!--                                            </t>-->
+<!--                                        </t>-->
+                                        <t t-if="docs.partner_id.company_registration_number">
+                                            <span>Company Reg:
+                                                <t t-esc="docs.partner_id.company_registration_number"/>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                        <t t-if="docs.partner_id.vat">
+                                            <span>VAT NO:
+                                                <t t-esc="docs.partner_id.vat"/>
+                                            </span>
+                                        </t>
+                                        <t t-if="docs.partner_id.ref">
+                                            <span>Customer NO:
+                                                <b>
+                                                    <t t-esc="docs.partner_id.ref"/>
+                                                </b>
+                                            </span>
+                                        </t>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <div class="article o_report_layout_standard">
+                <t t-raw="0"/>
+            </div>
+
+            <div class="footer">
+                <div class="text-center" style="border-top: 1px solid black;">
+                    <ul class="list-inline mb4">
+                        <li t-if="company.phone">Phone:
+                            <span t-field="company.phone"/>
+                        </li>
+                        <li t-if="company.email">Email:
+                            <span t-field="company.email"/>
+                        </li>
+                        <li t-if="company.website">Web:
+                            <span t-field="company.website"/>
+                        </li>
+                    </ul>
+                    <div name="financial_infos">
+                        <span t-field="company.report_footer"/>
+                    </div>
+                    <div class="text-muted">
+                        Page:
+                        <span class="page"/>
+                        /
+                        <span class="topage"/>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+
+<!--        <template id="external_layout_inherit_dmx" inherit_id="web.external_layout">-->
+<!--&lt;!&ndash;            <t t-if="company.external_report_layout == 'clean'" position="after">&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-if="company.external_report_layout == 'DMX'">&ndash;&gt;-->
+<!--                    <t t-call="external_layout_DMX">-->
+<!--                        <t t-raw="0"/>-->
+<!--                    </t>-->
+<!--&lt;!&ndash;                </t>&ndash;&gt;-->
+<!--&lt;!&ndash;            </t>&ndash;&gt;-->
+<!--        </template>-->
+
+        <template id="main_template_dmx" inherit_id="account_reports.main_template">
+            <xpath expr="//div[hasclass('o_account_reports_no_print')]" position="attributes">
+                <attribute name="t-att-style">'width: 100% !important;'</attribute>
+            </xpath>
+
+            <xpath expr="//table//thead" position="replace">
+                <style>
+                    .o_content{
+                        overflow-x: hidden !important;
+                    }
+                </style>
+                <thead>
+                    <tr>
+                        <t t-if="context.get('dmx_custom_ar')">
+                            <t t-set="count" t-value="0"/>
+                            <t t-foreach="lines.get('columns_header')" t-as="column_header">
+                                <t t-if="count == 1">
+                                    <th>Salesperson</th>
+                                </t>
+                                <th t-att-class="'o_account_report_column_header ' + (column_header.get('class', ''))"
+                                    t-att-style="column_header.get('style', '')">
+                                    <t t-esc="column_header.get('name')"/>
+                                </th>
+                                <t t-set="count" t-value="count+1"/>
+
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <t t-foreach="lines.get('columns_header')" t-as="column_header">
+                                <th t-att-class="'o_account_report_column_header ' + (column_header.get('class', ''))"
+                                    t-att-style="column_header.get('style', '')">
+                                    <t t-esc="column_header.get('name')"/>
+                                </th>
+                            </t>
+                        </t>
+                    </tr>
+                </thead>
+            </xpath>
+        </template>
+
+        <template id="line_template_dmx" inherit_id="account_reports.line_template">
+            <xpath expr="//tr" position="attributes">
+                <attribute name="t-att-class">'o_reconciliation_line '+trclass+' '+(line.get('class', ''))</attribute>
+                <attribute name="t-att-data-user-name">line.get('user_id')</attribute>
+                <attribute name="t-att-data-bad-debts">line.get('bad_debts')</attribute>
+                <attribute name="t-att-data-partner_id_new">line.get('partner_id')</attribute>
+            </xpath>
+
+            <xpath expr="//span[hasclass('o_account_report_column_value')]" position="attributes">
+                <attribute name="t-att-title">column.get('title', column.get('name'))</attribute>
+                <attribute name="t-att-data-total-column-value">column.get('total_value')</attribute>
+                <attribute name="t-att-style">'display: block;' if 'whitespace_print' in column.get('class', '') else ''
+                </attribute>
+            </xpath>
+
+            <xpath expr="//tr//td[1]" position="after">
+                <td t-if="context.get('dmx_custom_ar')">
+                    <span t-esc="line.get('user_id')" style="margin: 0;"/>
+                </td>
+            </xpath>
+
+
+            <xpath expr="//tr" position="inside">
+                <td t-if="context.get('dmx_custom_ar') and line.get('partner_id')">
+                    <div t-if='context.get("print_mode") != True' class='no_print pull-right' id='history' style="margin-left:5px;">
+                        <div class="btn-group dropdown" t-if="model.get_history(line.get('partner_id'))">
+                            <a type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+                               aria-expanded="false">
+                                History
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right o_account_reports_history" role="menu">
+                                <t t-if="model.get_history(line.get('partner_id'))">
+                                    <t t-foreach="model.get_history(line.get('partner_id'))" t-as='msg'>
+                                        <li role="presentation" style='margin-left: 5px'>
+                                            <span t-field='msg.date'/>
+                                            (<t t-esc='msg.author_id.sudo().name'/>) :
+                                            <t t-raw='msg.body'/>
+                                        </li>
+                                        <li role="presentation" class="divider"></li>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    No History Found
+                                </t>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+                <td t-if="context.get('dmx_custom_ar') and line.get('partner_id')">
+                    <button class="btn btn-default o_account_reports_followup-set-next-action" style="font-size:10px;"
+                            t-att-data-partner="line.get('partner_id')">Log Note
+                    </button>
+                </td>
+            </xpath>
+
+            <xpath expr="//t[@t-as='column']" position="before">
+                <td class="o_account_report_line number" t-if="context.get('dmx_aged_payable', False)" style="white-space:nowrap;"><t t-esc="line.get('credit_limit')"/></td>
+            </xpath>
+        </template>
+
+        <template id="account_reports.template_aged_receivable_report" inherit_id="account_reports.main_template"
+                  primary="True">
+            <xpath expr="//div[hasclass('o_account_reports_summary')]" position="after">
+                <t t-if="context.get('dmx_custom_ar', False)">
+                    <p style="width: 25%;float: left;position: absolute;top: 3%;left: 60%;">
+                        <label style="float: left;margin: 0;line-height: 30px;">Salesperson :</label>
+                        <span style="float:left;">
+                            <input style="border: unset;border-bottom: 1px solid gainsboro;"
+                                   class="test_customer form-control" type="text"/>
+                        </span>
+                    </p>
+                    <p style="width: 100%;float: left;position: absolute;top: 15%;left: 60%;">
+                        <label style="float: left;margin: 0;line-height: 30px;">Bad Debts :</label>
+                        <span style="float:left;">
+                            <input style="border: unset;border-bottom: 1px solid gainsboro; margin-top: 9px; margin-left: 5px;"
+                                   class="bad_debts" type="checkbox" name="bad_debts" t-att-checked="options.get('bad_debts')"/>
+                        </span>
+
+                        <label style="float: left;margin-left: 15px;line-height: 30px;">Invoices Only :</label>
+                        <span style="float:left;">
+                            <input style="border: unset;border-bottom: 1px solid gainsboro; margin-top: 9px; margin-left: 5px;"
+                                   class="invoices_only" type="checkbox" name="invoices_only" t-att-checked="options.get('invoices_only')"/>
+                        </span>
+                        <label style="float: left;margin-left: 15px;line-height: 30px;">Subscriptions Only :</label>
+                        <span style="float:left;">
+                            <input style="border: unset;border-bottom: 1px solid gainsboro; margin-top: 9px; margin-left: 5px;"
+                                   class="subscriptions_only" type="checkbox" name="subscriptions_only" t-att-checked="options.get('subscriptions_only')"/>
+                        </span>
+                        <label style="float: left;margin-left: 15px;line-height: 30px;">Projects Only :</label>
+                        <span style="float:left;">
+                            <input style="border: unset;border-bottom: 1px solid gainsboro; margin-top: 9px; margin-left: 5px;"
+                                   class="projects_only" type="checkbox" name="projects_only" t-att-checked="options.get('projects_only')"/>
+                        </span>
+                    </p>
+                </t>
+            </xpath>
+            <xpath expr="//thead/tr" position="inside">
+                <th/>
+                <th/>
+            </xpath>
+            <xpath expr="//tbody" position="replace">
+                <t t-if="lines.get('lines')">
+                    <t t-call="account_reports.line_template_aged_payable_report"/>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>
