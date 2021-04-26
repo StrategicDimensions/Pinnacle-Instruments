@@ -3,7 +3,7 @@
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo>
     <template id="partner_statement.activity_statement_document">
-        <t t-call="partner_statement.external_layout_DMX">
+        <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context({'lang': lang})" />
             <div class="page">
                 <h2 style="text-align:center;font-size:20px;">Activity Statement</h2>
@@ -25,50 +25,50 @@
                         <p>
                                 <span
                                 t-if="account_type == 'payable'"
-                            >Supplier </span>Statement between <span
+                            >Supplier </span> Customer Activity Statement between <span
                                 t-esc="d['start']"
                             /> and <span t-esc="d['end']" /> in <span
                                 t-esc="display_currency.name"
                             />
                             </p>
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" style="border: 2px solid black;">
                             <thead>
                                 <tr>
-                                    <th>Reference number</th>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th class="amount">Amount</th>
-                                    <th class="amount">Balance</th>
+                                    <th style="border-right: 2px solid black;">Reference number</th>
+                                    <th style="border-right: 2px solid black;">Date</th>
+                                    <th style="border-right: 2px solid black;">Description</th>
+                                    <th class="amount" style="border-right: 2px solid black;">Amount</th>
+                                    <th class="amount" style="border-right: 2px solid black;">Balance</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr style="border-right: 2px solid black;">
                                     <td />
-                                    <td>
+                                    <td style="border-right: 2px solid black;border-left: 2px solid black">
                                         <span t-esc="d['start']" />
                                     </td>
-                                    <td>
+                                    <td style="border-right: 2px solid black;">
                                             Balance Forward
                                         </td>
                                     <td />
-                                    <td class="amount">
+                                    <td class="amount" style="border-right: 2px solid black;border-left: 2px solid black">
                                         <span
                                             t-esc="currency['balance_forward']"
                                             t-options="{'widget': 'monetary', 'display_currency': display_currency}"
                                         />
                                     </td>
                                 </tr>
-                                <tr
+                                <tr style="border-right: 2px solid black;"
                                     t-foreach="currency['lines']"
                                     t-as="line"
                                     t-att-class="'statement-blocked' if line['blocked'] else ''">
-                                    <td>
+                                    <td style="border-right: 2px solid black;">
                                         <span t-esc="line['move_id']" />
                                     </td>
-                                    <td>
+                                    <td style="border-right: 2px solid black;">
                                         <span t-esc="line['date']" />
                                     </td>
-                                    <td>
+                                    <td style="border-right: 2px solid black;">
                                         <t t-if="line['name'] != '/'">
                                             <span t-esc="line['move_id']"/>
                                         </t>
@@ -79,29 +79,29 @@
                                             <span t-else="" t-esc="line['ref']" />
                                         </t>
                                     </td>
-                                    <td class="amount">
+                                    <td class="amount" style="border-right: 2px solid black;">
                                         <span
                                             t-esc="line['amount']"
                                             t-options="{'widget': 'monetary', 'display_currency': display_currency}"
                                         />
                                     </td>
-                                    <td class="amount">
+                                    <td class="amount" style="border-right: 2px solid black;">
                                         <span
                                             t-esc="line['balance']"
                                             t-options="{'widget': 'monetary', 'display_currency': display_currency}"
                                         />
                                     </td>
                                 </tr>
-                                <tr>
+                                <tr style="border-right: 2px solid black;">
                                     <td />
-                                    <td>
+                                    <td style="border-right: 2px solid black;border-left: 2px solid black">
                                         <span t-esc="d['end']" />
                                     </td>
-                                    <td>
+                                    <td style="border-right: 2px solid black;">
                                             Ending Balance
                                         </td>
                                     <td />
-                                    <td class="amount">
+                                    <td class="amount" style="border-right: 2px solid black;border-left: 2px solid black">
                                         <span
                                             t-esc="currency['amount_due']"
                                             t-options="{'widget': 'monetary', 'display_currency': display_currency}"
@@ -134,97 +134,12 @@
         </t>
     </template>
 
-    <template id="external_layout_DMX">
-            <div class="header" style="">
-                <div class="row">
-                    <center>
-                        <img src="/dmx/static/src/img/Header.png" style="max-height: 150px; width: 100%"/>
-                    </center>
-                </div>
-
-                <div class="row" style="margin-top:5px;">
-                    <div class="col-xs-6">
-                        <h4>
-                            <span t-field="company.partner_id.name" style="font-weight: bold;"/>
-                        </h4>
-                        <t t-if="company.company_registry">
-                            Company Reg. No
-                            <span t-field="company.company_registry"/>
-                        </t>
-                        <t t-if="company.vat">
-                            <t t-esc="company.country_id.vat_label or 'VAT No '"/>
-                            <span t-field="company.vat"/>
-                        </t><br/>
-                        <span t-field='company.street'/>
-                        <br/>
-                        <span t-field='company.street2'/>
-                        <br/>
-                        <span t-field='company.city'/>
-                        <span t-field='company.state_id.name'/>
-                        <span t-field='company.zip'/>
-                        <br/>
-                        <span t-field='company.country_id.name'/>
-                        <br/>
-                    </div>
-                    <div class="col-xs-2"/>
-                    <div class="col-xs-4" style=" margin-left:15%;margin: left;height: 50%width: 38%;border: 2px solid black;padding: 10px;">
-                        <span
-                            t-esc="get_inv_addr(o)"
-                            t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'
-                        />
-                        <div t-if="o.vat" class="mt16"><t
-                                t-esc="company.country_id.vat_label or 'Tax ID'"
-                            />: <span t-field="o.vat" /></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="article o_report_layout_standard">
-                <t t-raw="0"/>
-            </div>
-
-            <div class="footer">
-                <div class="text-center" style="border-top: 1px solid black;">
-                    <ul class="list-inline mb4">
-                        <li t-if="company.phone">Phone:
-                            <span t-field="company.phone"/>
-                        </li>
-                        <li t-if="company.email">Email:
-                            <span t-field="company.email"/>
-                        </li>
-                        <li t-if="company.website">Web:
-                            <span t-field="company.website"/>
-                        </li>
-                    </ul>
-                    <div name="financial_infos">
-                        <span t-field="company.report_footer"/>
-                    </div>
-                    <div class="text-muted">
-                        Page:
-                        <span class="page"/>
-                        /
-                        <span class="topage"/>
-                    </div>
-                </div>
-
-            </div>
-        </template>
-
-    <record id="partner_activity_statement" model='report.paperformat'>
-        <field name="name">Partner Activity Statement</field>
-        <field name="format">custom</field>
-        <field name="orientation">Portrait</field>
-        <field name="margin_top">90</field>
-        <field name="header_spacing">85</field>
-    </record>
-
     <record id="action_print_activity_statement" model="ir.actions.report">
             <field name="name">Activity Statement</field>
             <field name="model">res.partner</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">partner_statement.activity_statement</field>
             <field name="report_file">partner_statement.activity_statement</field>
-            <field name="paperformat_id" ref="partner_statement.partner_activity_statement"/>
             <field name="binding_type">report</field>
         </record>
 </odoo>
