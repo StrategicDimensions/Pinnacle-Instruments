@@ -13,4 +13,16 @@
         </field>
     </record>
 
+    <record id="purchase_order_line_form_view_pinnacle_inherited" model="ir.ui.view">
+        <field name="name">purchase.order.line.form.view.pinnacle.inherited</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_form2"/>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_planned']" position="after">
+                <field name="analytic_account_id"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
