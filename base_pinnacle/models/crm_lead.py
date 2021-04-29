@@ -8,13 +8,13 @@ class CrmLead(models.Model):
 
     project_id = fields.Many2one('project.project', string='Project')
 
-    def action_sale_quotations_new(self):
+    def action_sale_quotations_new_custom(self):
         if not self.partner_id:
             return self.env["ir.actions.actions"]._for_xml_id("sale_crm.crm_quotation_partner_action")
         else:
-            return self.action_new_quotation()
+            return self.action_new_quotation_custom()
 
-    def compute_action_new_quotation(self):
+    def action_new_quotation_custom(self):
         action = self.env["ir.actions.actions"]._for_xml_id("sale_crm.sale_action_quotations_new")
         action['context'] = {
             'search_default_opportunity_id': self.id,
@@ -30,6 +30,5 @@ class CrmLead(models.Model):
             'default_tag_ids': [(6, 0, self.tag_ids.ids)],
             'default_analytic_account_id': self.project_id.analytic_account_id.id
         }
-        # print("\n\n====action", action)
         return action
 

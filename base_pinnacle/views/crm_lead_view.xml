@@ -5,10 +5,15 @@
             <field name="name">crm.form.view.pinnacle.inherited</field>
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="priority">100</field>
             <field name="arch" type="xml">
                 <field name="team_id" position="after">
                     <field name="project_id"/>
                 </field>
+                <xpath expr="//button[@name='action_sale_quotations_new']" position="replace">
+                    <button string="New Quotation" name="action_sale_quotations_new_custom" type="object" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('type', '=', 'lead'), '&amp;', ('probability', '=', 0), ('active', '=', False)]}"/>
+                </xpath>
             </field>
         </record>
 
