@@ -15,7 +15,4 @@
         'views/project_view.xml',
         'data/data.xml',
     ],
-    # 'qweb': [
-    #     'static/src/xml/subscription_report_template.xml',
-    # ],
 }
