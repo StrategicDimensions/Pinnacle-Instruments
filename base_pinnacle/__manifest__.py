@@ -7,7 +7,7 @@
     'category': 'Uncategorized',
     'version': '14.0.1.0',
     'depends': [
-        'base', 'web', 'crm', 'sale', 'sale_crm', 'purchase','project'
+        'base', 'web', 'crm', 'sale', 'sale_crm', 'purchase','project', 'industry_fsm_sale'
     ],
     'data': [
         'views/crm_lead_view.xml',
