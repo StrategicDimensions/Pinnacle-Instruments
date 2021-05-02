@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2018 ForgeFlow, S.L. (https://www.forgeflow.com)
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <template id="partner_statement.activity_statement_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context({'lang': lang})" />
+            <div class="page">
+                <h2 style="text-align:center;font-size:20px;">Activity Statement</h2>
+                <div id="informations" class="row mt32 mb32">
+                    <div class="col-3 bm-2">
+                        <strong>Date:</strong>
+                        <p t-esc="d['today']" class="m-0" />
+                    </div>
+                    <div t-if="o.ref" class="col-3 bm-2">
+                        <strong>Partner Code:</strong>
+                        <p t-field="o.ref" class="m-0" />
+                    </div>
+                </div>
+                <t t-if="d['currencies']">
+                    <br />
+                    <t t-foreach="d['currencies'].items()" t-as="currency">
+                        <t t-set="display_currency" t-value="Currencies[currency[0]]" />
+                        <t t-set="currency" t-value="currency[1]" />
+                        <p>
+                                <span
+                                t-if="account_type == 'payable'"
+                            >Supplier </span> Customer Activity Statement between <span
+                                t-esc="d['start']"
+                            /> and <span t-esc="d['end']" /> in <span
+                                t-esc="display_currency.name"
+                            />
+                            </p>
+                        <table class="table table-bordered" style="border: 2px solid black;">
+                            <thead>
+                                <tr>
+                                    <th style="border-right: 2px solid black;">Reference number</th>
+                                    <th style="border-right: 2px solid black;">Date</th>
+                                    <th style="border-right: 2px solid black;">Description</th>
+                                    <th class="amount" style="border-right: 2px solid black;">Amount</th>
+                                    <th class="amount" style="border-right: 2px solid black;">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-right: 2px solid black;">
+                                    <td />
+                                    <td style="border-right: 2px solid black;border-left: 2px solid black">
+                                        <span t-esc="d['start']" />
+                                    </td>
+                                    <td style="border-right: 2px solid black;">
+                                            Balance Forward
+                                        </td>
+                                    <td />
+                                    <td class="amount" style="border-right: 2px solid black;border-left: 2px solid black">
+                                        <span
+                                            t-esc="currency['balance_forward']"
+                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr style="border-right: 2px solid black;"
+                                    t-foreach="currency['lines']"
+                                    t-as="line"
+                                    t-att-class="'statement-blocked' if line['blocked'] else ''">
+                                    <td style="border-right: 2px solid black;">
+                                        <span t-esc="line['move_id']" />
+                                    </td>
+                                    <td style="border-right: 2px solid black;">
+                                        <span t-esc="line['date']" />
+                                    </td>
+                                    <td style="border-right: 2px solid black;">
+                                        <t t-if="line['name'] != '/'">
+                                            <span t-esc="line['move_id']"/>
+                                        </t>
+                                        <t t-if="line['name'] == '/'">
+                                            <span
+                                                t-if="line['ref'] == 'Payment'"
+                                            >Customer Payment</span>
+                                            <span t-else="" t-esc="line['ref']" />
+                                        </t>
+                                    </td>
+                                    <td class="amount" style="border-right: 2px solid black;">
+                                        <span
+                                            t-esc="line['amount']"
+                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                                        />
+                                    </td>
+                                    <td class="amount" style="border-right: 2px solid black;">
+                                        <span
+                                            t-esc="line['balance']"
+                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                                        />
+                                    </td>
+                                </tr>
+                                <tr style="border-right: 2px solid black;">
+                                    <td />
+                                    <td style="border-right: 2px solid black;border-left: 2px solid black">
+                                        <span t-esc="d['end']" />
+                                    </td>
+                                    <td style="border-right: 2px solid black;">
+                                            Ending Balance
+                                        </td>
+                                    <td />
+                                    <td class="amount" style="border-right: 2px solid black;border-left: 2px solid black">
+                                        <span
+                                            t-esc="currency['amount_due']"
+                                            t-options="{'widget': 'monetary', 'display_currency': display_currency}"
+                                        />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <t
+                            t-call="partner_statement.aging_buckets"
+                            t-if="currency['buckets']"
+                        />
+                    </t>
+                </t>
+                <p t-if="d.get('no_entries')">
+                    <strong>The partner doesn't have due entries.</strong>
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="activity_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="d" t-value="data.get(o.id)" />
+                <t
+                    t-call="partner_statement.activity_statement_document"
+                />
+            </t>
+        </t>
+    </template>
+
+    <record id="action_print_activity_statement" model="ir.actions.report">
+            <field name="name">Activity Statement</field>
+            <field name="model">res.partner</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">partner_statement.activity_statement</field>
+            <field name="report_file">partner_statement.activity_statement</field>
+            <field name="binding_type">report</field>
+        </record>
+</odoo>
