@@ -15,6 +15,7 @@
         "security/statement_security.xml",
         "security/ir.model.access.csv",
         "views/activity_statement.xml",
+        "views/res_partner_view.xml",
         # "views/report_templates.xml",
         "data/mail_template_data.xml",
         "data/ir_cron.xml",
