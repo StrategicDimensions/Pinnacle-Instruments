@@ -23,6 +23,7 @@ class ResPartner(models.Model):
     is_vendor = fields.Boolean(string='Is Vendor', default=True)
     statement_sent = fields.Boolean('Statement Sent', default=False)
     excl_fully_allocated_invoices = fields.Boolean(string="Exclude Fully Allocated Invoices")
+    statement_email = fields.Char('Statement Email')
     statement_period = fields.Selection([('current_month', 'Current Month'),
                                          ('current_quarter', 'Current Quarter'),
                                          ('current_fiscal_year', 'Current Fiscal Year'),

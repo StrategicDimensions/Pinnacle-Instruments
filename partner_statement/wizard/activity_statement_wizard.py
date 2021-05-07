@@ -109,9 +109,9 @@ class ActivityStatementWizard(models.TransientModel):
                         template_obj = self.env['mail.template'].browse(template_id)
                         partner_list = []
                         if self.env['ir.config_parameter'].sudo().get_param('partner_statement.send_to_options') == 'outstanding_balance_only':
-                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent','=',False), ('customer','=',True)]).filtered(lambda l:(l.credit - l.debit) != 0)])
+                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent','=',False), ('customer','=',True), ('statement_email', '=', True)]).filtered(lambda l:(l.credit - l.debit) != 0)])
                         else:
-                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent','=',False),('customer','=',True)])])
+                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent','=',False),('customer','=',True), ('statement_email', '=', True)])])
                         partner_list = [partner_list[0][:50]]
                         #
                         wiz_id = self.create({'number_partner_ids': len(partner_list)})
