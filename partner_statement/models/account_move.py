@@ -19,7 +19,8 @@ class AccountMoveLine(models.Model):
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    customer = fields.Boolean(string='Customer' , default=True)
+    customer = fields.Boolean(string='Is Customer', default=True)
+    is_vendor = fields.Boolean(string='Is Vendor', default=True)
     statement_sent = fields.Boolean('Statement Sent', default=False)
     excl_fully_allocated_invoices = fields.Boolean(string="Exclude Fully Allocated Invoices")
     statement_period = fields.Selection([('current_month', 'Current Month'),
