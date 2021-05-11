@@ -13,6 +13,9 @@
                 <xpath expr="//notebook/page[@name='sales_purchases']/group/group[@name='purchase']/field[@name='property_supplier_payment_term_id']" position="before">
                         <field name="is_vendor"/>
                 </xpath>
+                <xpath expr="//form/sheet/group/group" position="inside">
+                    <field name="statement_email" widget="email"/>
+                </xpath>
             </field>
         </record>
 

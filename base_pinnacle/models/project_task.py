@@ -11,7 +11,6 @@ class ProjectTask(models.Model):
     def _compute_used_products_invoice_amount(self):
         sale_order_ids = self.env['sale.order'].search([('task_id', '=', self.id)])
         if sale_order_ids:
-            print("\n\n======sale_order_ids.mapped('amount_total')", sale_order_ids.mapped('amount_total'))
             self.used_products_invoice_amount = sum(sale_order_ids.mapped('amount_total'))
         else:
             self.used_products_invoice_amount = 0.0
@@ -21,6 +20,22 @@ class ProjectTask(models.Model):
         res = super(ProjectTask, self).create(vals)
         sequence = self.env['ir.sequence'].next_by_code('project.task') or _('New')
         res['name'] = sequence + '-' + vals['name']
+        return res
+
+    def action_fsm_create_quotation(self):
+        res = super(ProjectTask, self).action_fsm_create_quotation()
+        for order_line in self.sale_order_id:
+            res.update({
+                'context': {
+                    'fsm_mode': True,
+                    'form_view_initial_mode': 'edit',
+                    'default_partner_id': self.partner_id.id,
+                    'default_task_id': self.id,
+                    'default_company_id': self.company_id.id,
+                    'default_analytic_account_id': self.project_id.analytic_account_id.id,
+                    'default_order_line': [(6, 0, [each.id for each in order_line.order_line if each.product_id.type != 'service'])]
+                },
+            })
         return res
 
     def _compute_used_products(self):
