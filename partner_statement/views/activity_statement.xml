@@ -5,8 +5,18 @@
     <template id="partner_statement.activity_statement_document">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context({'lang': lang})" />
+            <div class="float-right">
+                    <t t-if="o.parent_id.ref">
+                       Account No : <span t-esc="o.parent_id.ref"/>
+                    </t><br/>
+                    <span t-esc="o.name"/><br/>
+                    <span t-esc="o.street"/><br/>
+                    <span t-esc="o.street2"/><br/>
+                    <span t-esc="o.city"/> <span t-esc="o.zip"/><br/>
+                    <span t-esc="o.country_id.name"/>
+                <h2 style="text-align:center;font-size:20px;margin-left: -600px;">Activity Statement</h2>
+            </div>
             <div class="page">
-                <h2 style="text-align:center;font-size:20px;">Activity Statement</h2>
                 <div id="informations" class="row mt32 mb32">
                     <div class="col-3 bm-2">
                         <strong>Date:</strong>
