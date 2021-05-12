@@ -2,6 +2,13 @@
 from odoo import api, models, fields, _
 from odoo.osv import expression
 
+
+class ProjectProject(models.Model):
+    _inherit = 'project.project'
+
+    is_field_service_project = fields.Boolean(string='Is field service project')
+
+
 class ProjectTask(models.Model):
     _inherit = 'project.task'
 
@@ -18,8 +25,9 @@ class ProjectTask(models.Model):
     @api.model
     def create(self, vals):
         res = super(ProjectTask, self).create(vals)
-        sequence = self.env['ir.sequence'].next_by_code('project.task') or _('New')
-        res['name'] = sequence + '-' + vals['name']
+        if res['project_id'].is_field_service_project:
+            sequence = self.env['ir.sequence'].next_by_code('project.task') or _('New')
+            res['name'] = sequence + '-' + vals['name']
         return res
 
     def action_fsm_create_quotation(self):
