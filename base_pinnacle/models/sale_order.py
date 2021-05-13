@@ -9,9 +9,9 @@ class SaleOrder(models.Model):
 
     def _prepare_invoice(self):
         res = super(SaleOrder, self)._prepare_invoice()
-        partner_id = self.env['res.partner'].search([('id', '=', res['partner_id'])])
-        if partner_id.parent_id:
-            res['partner_id'] = partner_id.parent_id.id
+        # partner_id = self.env['res.partner'].search([('id', '=', res['partner_id'])])
+        # if partner_id.parent_id:
+        #     res['partner_id'] = partner_id.parent_id.id
         return res
 
 
