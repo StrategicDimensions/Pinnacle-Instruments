@@ -8,7 +8,7 @@
             <field name="priority">100</field>
             <field name="arch" type="xml">
                 <field name="team_id" position="after">
-                    <field name="project_id"/>
+                    <field name="project_id" options="{'no_create_edit':1}"/>
                 </field>
                 <xpath expr="//button[@name='action_sale_quotations_new']" position="replace">
                     <button string="New Quotation" name="action_sale_quotations_new_custom" type="object" class="oe_highlight"
