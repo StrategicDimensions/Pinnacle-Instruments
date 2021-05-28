@@ -6,7 +6,7 @@ from odoo import api, fields, models
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    project_id = fields.Many2one('project.project', string='Project')
+    project_id = fields.Many2one('project.project', string='Project', required=True)
 
     def action_sale_quotations_new_custom(self):
         if not self.partner_id:

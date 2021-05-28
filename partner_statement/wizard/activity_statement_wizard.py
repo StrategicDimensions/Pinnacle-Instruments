@@ -63,7 +63,9 @@ class ActivityStatementWizard(models.TransientModel):
                 template_obj = self.env['mail.template'].browse(template_id)
                 for each in self._context.get('active_ids'):
                     partner_id = self.env['res.partner'].browse(each)
-                    template_obj.email_to = partner_id.email if partner_id.email else 'mandy.jackson@dmx.co.za'
+                    child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
+                    send_email_to = child_id[0].email if child_id else ''
+                    template_obj.email_to = send_email_to
                     template_obj.subject = (partner_id.company_id.name if partner_id.company_id else '') + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                     # template_obj.body_html = """
                     #                         <p>Dear Sir/Madam,</p>
@@ -89,13 +91,10 @@ class ActivityStatementWizard(models.TransientModel):
             except Exception as e:
                 _logger.error('Unable to send email for order %s',e)
 
-
     def sent_activity_statement_by_email_cron(self):
-        print("\n\n===called")
         config_id = self.env['ir.config_parameter'].sudo().get_param('partner_statement.cron_next_call_date')
         config_statement_setting = self.env['ir.config_parameter'].sudo().get_param('partner_statement.statement_period_setting')
         if int(config_id) == datetime.now().day:
-            print("\n\n=====got date")
             automatic_statement = self.env['ir.config_parameter'].sudo().get_param('partner_statement.automatic_statement')
             if config_id and automatic_statement:
                 # cron_next_call_date = int(self.env['ir.config_parameter'].sudo().get_param('customer_activity_statement.cron_next_call_date'))
@@ -151,8 +150,10 @@ class ActivityStatementWizard(models.TransientModel):
                             if partner_list:
                                 for each in partner_list[0]:
                                     partner_id = self.env['res.partner'].browse(each)
+                                    child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
+                                    send_email_to = child_id[0].email if child_id else ''
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
-                                    template_obj.email_to = partner_id.email if partner_id.email else 'mandy.jackson@dmx.co.za'
+                                    template_obj.email_to = send_email_to
                                     template_obj.subject = partner_id.company_id.name + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                                     template_obj.report_name = "Statement "+ str(date.today())
                                     if self.env['ir.config_parameter'].sudo().get_param('partner_statement.mode') == "Test":
@@ -186,6 +187,8 @@ class ActivityStatementWizard(models.TransientModel):
                             if partner_list:
                                 for each in partner_list[0]:
                                     partner_id = self.env['res.partner'].browse(each)
+                                    child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
+                                    send_email_to = child_id[0].email if child_id else ''
                                     wiz_id.write({'excl_fully_allocated_invoices': partner_id.excl_fully_allocated_invoices})
                                     if partner_id.statement_period and partner_id.statement_period in ('current_month', 'last_month'):
                                         wiz_date_start = date.replace(day=1) if statement_period == 'current_month' else date.replace(day=1) + relativedelta(months= -1)
@@ -222,7 +225,7 @@ class ActivityStatementWizard(models.TransientModel):
                                         })
 
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
-                                    template_obj.email_to = partner_id.email if partner_id.email else 'mandy.jackson@dmx.co.za'
+                                    template_obj.email_to = send_email_to
                                     template_obj.subject = (partner_id.company_id.name if partner_id.company_id else '') + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                                     template_obj.report_name = "Statement "+ str(date.today())
                                     if self.env['ir.config_parameter'].sudo().get_param('partner_statement.mode') == "Test":
@@ -253,5 +256,3 @@ class ActivityStatementWizard(models.TransientModel):
                                     partner_id.statement_sent = True
                     except Exception as e:
                         _logger.error('Unable to send email for order %s', e)
-#
-#
