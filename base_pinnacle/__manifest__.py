@@ -13,6 +13,7 @@
         'views/crm_lead_view.xml',
         'views/purchase_order_view.xml',
         'views/project_view.xml',
+        'views/res_partner_view.xml',
         'data/data.xml',
     ],
 }
