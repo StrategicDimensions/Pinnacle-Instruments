@@ -36,6 +36,9 @@
                     </div>
                 </button>
             </xpath>
+            <field name="partner_phone" position="before">
+                <field name="customer_ref"/>
+            </field>
         </field>
     </record>
 

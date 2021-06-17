@@ -408,6 +408,8 @@ class ReportStatementCommon(models.AbstractModel):
                 line["date_maturity"] = format_date(
                     line["date_maturity"], date_formats.get(partner_id, default_fmt)
                 )
+                invoice_id = self.env['account.move'].search([('name', '=', line['move_id'])])
+                line['payment_reversal_ref'] = invoice_id.ref if invoice_id and invoice_id.ref else ''
                 line_currency["lines"].append(line)
 
             if data["show_aging_buckets"]:

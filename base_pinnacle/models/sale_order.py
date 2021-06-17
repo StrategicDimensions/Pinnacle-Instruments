@@ -14,6 +14,12 @@ class SaleOrder(models.Model):
         #     res['partner_id'] = partner_id.parent_id.id
         return res
 
+    @api.onchange('partner_id')
+    def onchange_warehouse(self):
+        for partner in self:
+            if partner.partner_id.parent_id:
+                partner.warehouse_id = partner.partner_id.parent_id.warehouse_id.id
+
 
 class SequenceMixin(models.AbstractModel):
     _inherit = 'sequence.mixin'
