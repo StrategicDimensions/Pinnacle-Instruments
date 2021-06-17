@@ -14,7 +14,6 @@ class ProjectTask(models.Model):
 
     used_product_count = fields.Integer(compute="_compute_used_products")
     used_products_invoice_amount = fields.Monetary(compute="_compute_used_products_invoice_amount")
-    customer_ref = fields.Char('Customer Reference')
 
     def _compute_used_products_invoice_amount(self):
         sale_order_ids = self.env['sale.order'].search([('task_id', '=', self.id)])
@@ -40,8 +39,6 @@ class ProjectTask(models.Model):
                     'form_view_initial_mode': 'edit',
                     'default_partner_id': self.partner_id.id,
                     'default_task_id': self.id,
-                    'default_client_order_ref': self.customer_ref,
-                    'default_origin': self.name,
                     'default_company_id': self.company_id.id,
                     'default_analytic_account_id': self.project_id.analytic_account_id.id,
                     'default_order_line': [(6, 0, [each.id for each in order_line.order_line if each.product_id.type != 'service'])]

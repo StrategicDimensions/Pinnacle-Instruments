@@ -83,10 +83,9 @@
                                             <span t-esc="line['move_id']"/>
                                         </t>
                                         <t t-if="line['name'] == '/'">
-                                            <span t-if="line['ref'] == 'Payment'">
-                                                <t t-if="line['payment_reversal_ref']">Customer Payment -<br/><span t-esc="line['payment_reversal_ref']"/></t>
-                                                <t t-else=""><span>Customer Payment</span></t>
-                                            </span>
+                                            <span
+                                                t-if="line['ref'] == 'Payment'"
+                                            >Customer Payment</span>
                                             <span t-else="" t-esc="line['ref']" />
                                         </t>
                                     </td>
