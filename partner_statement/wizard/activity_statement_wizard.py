@@ -80,8 +80,10 @@ class ActivityStatementWizard(models.TransientModel):
                     pdf = report_template_id._render_qweb_pdf(each)
                     values = base64.b64encode(pdf[0])
                     attachment_id = self.env['ir.attachment'].sudo().create(
-                        {'datas': values, 'name': "Statement "+ str(date.today())})
+                        {'datas': values, 'name': "Statement_%s.pdf" + str(date.today())})
                     template_obj.attachment_ids = attachment_id
+                    partner_id.message_post(body=_('Statement %s' % str(date.today())),
+                                            attachment_ids=[attachment_id.id])
                     record_id = template_obj.with_context(partner_ids=[each]).send_mail(self.id, force_send=True, raise_exception=True)
                     mail_id = self.env['mail.mail'].browse(record_id)
                     mail_id.write({
@@ -173,7 +175,7 @@ class ActivityStatementWizard(models.TransientModel):
                                         pdf = report_template_id._render_qweb_pdf(each)
                                         values = base64.b64encode(pdf[0])
                                         attachment_id = self.env['ir.attachment'].sudo().create(
-                                            {'datas': values, 'name': "Statement " + str(date.today())})
+                                            {'datas': values, 'name': "Statement_%s.pdf" + str(date.today())})
                                         template_obj.attachment_ids = attachment_id
                                         record_id = template_obj.with_context(partner_ids=[each]).send_mail(wiz_id.id,force_send=True, raise_exception=True)
                                     mail_id = self.env['mail.mail'].browse(record_id)
