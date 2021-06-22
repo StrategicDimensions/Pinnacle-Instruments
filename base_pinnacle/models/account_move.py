@@ -12,7 +12,7 @@ class AccountInvoice(models.Model):
         records_ids = self._context.get('active_ids')
         new_records = self.browse(records_ids)
         partner_list = []
-        email_subject = 'Invoices'
+        email_subject = str(new_records[0].company_id.name) + ' Invoices'
         invoice_html = ''
         for each in new_records:
             partner_list.append(each.partner_id.id)
