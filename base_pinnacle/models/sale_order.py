@@ -61,9 +61,10 @@ class SequenceMixin(models.AbstractModel):
             format_values['month'] = self[self._sequence_date_field].month
         format_values['seq'] = format_values['seq'] + 1
         print("\n\nformat.format(**format_values)", format.format(**format_values))
-        if self.move_type == 'in_invoice':
+        
+        if self.env.context.get('default_move_type') == 'in_invoice':
             self[self._sequence_field] = 'BILL' + str(datetime.datetime.today().year) + '/' + str(format_values['seq']).zfill(4)
-        elif self.move_type == 'out_invoice':
+        elif self.env.context.get('default_move_type') == 'out_invoice':
             self[self._sequence_field] = 'INV' + str(datetime.datetime.today().year) + '/' + str(format_values['seq']).zfill(4)
         else:
             self[self._sequence_field] = format.format(**format_values)
