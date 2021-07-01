@@ -31,9 +31,9 @@ class SequenceMixin(models.AbstractModel):
             regex = re.sub(r"\?P<\w+>", "?:",
                            record._sequence_fixed_regex.replace(r"?P<seq>", ""))  # make the seq the only matching group
             matching = re.match(regex, sequence)
-            if record.move_type == 'in_invoice':
+            if self.env.context.get('default_move_type') == 'in_invoice':
                 record.sequence_prefix = 'BILL' + str(datetime.datetime.today().year) + '/'
-            elif record.move_type == 'out_invoice':
+            elif self.env.context.get('default_move_type') == 'out_invoice':
                 record.sequence_prefix = 'INV' + str(datetime.datetime.today().year) + '/'
             else:
                 record.sequence_prefix = sequence[:matching.start(1)]
