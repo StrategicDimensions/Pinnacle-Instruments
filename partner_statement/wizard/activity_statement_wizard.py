@@ -64,8 +64,9 @@ class ActivityStatementWizard(models.TransientModel):
                 for each in self._context.get('active_ids'):
                     partner_id = self.env['res.partner'].browse(each)
                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
-                    send_email_to = child_id[0].email if child_id else partner_id.statement_email
+                    send_email_to = child_id[0].email if child_id else partner_id.statement_email or partner_id.email
                     template_obj.email_to = send_email_to
+                    template_obj.email_cc = 'accounts@ppsv.co.za'
                     template_obj.subject = (partner_id.company_id.name if partner_id.company_id else self.env.company.name) + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                     report_template_id = self.env.ref('partner_statement.action_print_activity_statement')
                     pdf = report_template_id._render_qweb_pdf(each)
@@ -146,9 +147,10 @@ class ActivityStatementWizard(models.TransientModel):
                                 for each in partner_list[0]:
                                     partner_id = self.env['res.partner'].browse(each)
                                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
-                                    send_email_to = child_id[0].email if child_id else partner_id.statement_email
+                                    send_email_to = child_id[0].email if child_id else partner_id.statement_email or partner_id.email
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
                                     template_obj.email_to = send_email_to
+                                    template_obj.email_cc = 'accounts@ppsv.co.za'
                                     company_name = partner_id.company_id.name if partner_id.company_id else self.env.company.name
                                     template_obj.subject = company_name + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                                     template_obj.report_name = "Statement " + str(date.today())
@@ -184,7 +186,7 @@ class ActivityStatementWizard(models.TransientModel):
                                 for each in partner_list[0]:
                                     partner_id = self.env['res.partner'].browse(each)
                                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
-                                    send_email_to = child_id[0].email if child_id else partner_id.statement_email
+                                    send_email_to = child_id[0].email if child_id else partner_id.statement_email or partner_id.email
                                     wiz_id.write({'excl_fully_allocated_invoices': partner_id.excl_fully_allocated_invoices})
                                     if partner_id.statement_period and partner_id.statement_period in ('current_month', 'last_month'):
                                         wiz_date_start = date.replace(day=1) if statement_period == 'current_month' else date.replace(day=1) + relativedelta(months= -1)
@@ -222,6 +224,7 @@ class ActivityStatementWizard(models.TransientModel):
 
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
                                     template_obj.email_to = send_email_to
+                                    template_obj.email_cc = 'accounts@ppsv.co.za'
                                     template_obj.subject = (partner_id.company_id.name if partner_id.company_id else self.env.company.name) \
                                                            + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                                     template_obj.report_name = "Statement " + str(date.today())
