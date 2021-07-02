@@ -5,8 +5,8 @@
     <template id="partner_statement.activity_statement_document">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context({'lang': lang})" />
-            <div class="float-right" style="border: 2px solid black;">
-                  <div style="margin-left: 5px;margin-right: 5px;margin-top: 5px;margin-bottom: 5px;">
+            <div class="float-right" style="border: 2px solid black;min-width:200px;min-height:150px;">
+                  <div style="margin-left: 5px;margin-right: 5px;margin-top: 5px;margin-bottom: 5px;min-width:200px;min-height:150px;">
                       <t t-if="o.parent_id.ref">
                        Account No : <span t-esc="o.parent_id.ref"/>
                     </t><br/>
