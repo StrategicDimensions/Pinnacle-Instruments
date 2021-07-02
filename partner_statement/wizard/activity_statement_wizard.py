@@ -48,7 +48,7 @@ class ActivityStatementWizard(models.TransientModel):
     def open_activity_statement_wizard(self):
         action = self.env["ir.actions.actions"]._for_xml_id("partner_statement.action_partner_activity_statement")
         action['context'] = {
-            'active_ids': [self._context.get('active_id')]
+            'active_ids': [self._context.get('active_ids')]
         }
         return action
 
@@ -61,21 +61,12 @@ class ActivityStatementWizard(models.TransientModel):
         if template_id:
             try:
                 template_obj = self.env['mail.template'].browse(template_id)
-                for each in self._context.get('active_ids'):
+                for each in self._context.get('active_ids')[0]:
                     partner_id = self.env['res.partner'].browse(each)
                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
-                    send_email_to = child_id[0].email if child_id else ''
+                    send_email_to = child_id[0].email if child_id else partner_id.statement_email
                     template_obj.email_to = send_email_to
                     template_obj.subject = (partner_id.company_id.name if partner_id.company_id else self.env.company.name) + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
-                    # template_obj.body_html = """
-                    #                         <p>Dear Sir/Madam,</p>
-                    #                         <p>Please find attached your account statement. If you have any queries, please feel free to contact us.</p>
-                    #                         <br/>
-                    #                         <p>Regards,<p/>
-                    #                         <br/>
-                    #                         <p>DMX Accounts</p>
-                    #                         <p>DMX Africa (Pty) Ltd</p>
-                    #                           """
                     report_template_id = self.env.ref('partner_statement.action_print_activity_statement')
                     pdf = report_template_id._render_qweb_pdf(each)
                     values = base64.b64encode(pdf[0])
@@ -87,9 +78,9 @@ class ActivityStatementWizard(models.TransientModel):
                     record_id = template_obj.with_context(partner_ids=[each]).send_mail(self.id, force_send=True, raise_exception=True)
                     mail_id = self.env['mail.mail'].browse(record_id)
                     mail_id.write({
-                                    'res_id':partner_id.id,
-                                    'model':'res.partner'
-                                    })
+                        'res_id':partner_id.id,
+                        'model':'res.partner'
+                    })
             except Exception as e:
                 _logger.error('Unable to send email for order %s',e)
 
@@ -111,10 +102,9 @@ class ActivityStatementWizard(models.TransientModel):
                         partner_list = []
                         if self.env['ir.config_parameter'].sudo().get_param('partner_statement.send_to_options') == 'outstanding_balance_only':
                             partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent', '=', False), ('customer','=',True)]).
-                                                filtered(lambda l:(l.credit - l.debit) != 0 and l.statement_email)])
+                                                filtered(lambda l:(l.credit - l.debit) != 0)])
                         else:
-                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent', '=', False),('customer','=',True)]).
-                                                filtered(lambda l: l.statement_email)])
+                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent', '=', False),('customer','=',True)])])
 
                         partner_list = [partner_list[0][:50]]
                         #
@@ -156,7 +146,7 @@ class ActivityStatementWizard(models.TransientModel):
                                 for each in partner_list[0]:
                                     partner_id = self.env['res.partner'].browse(each)
                                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
-                                    send_email_to = child_id[0].email if child_id else ''
+                                    send_email_to = child_id[0].email if child_id else partner_id.statement_email
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
                                     template_obj.email_to = send_email_to
                                     company_name = partner_id.company_id.name if partner_id.company_id else self.env.company.name
@@ -194,7 +184,7 @@ class ActivityStatementWizard(models.TransientModel):
                                 for each in partner_list[0]:
                                     partner_id = self.env['res.partner'].browse(each)
                                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
-                                    send_email_to = child_id[0].email if child_id else ''
+                                    send_email_to = child_id[0].email if child_id else partner_id.statement_email
                                     wiz_id.write({'excl_fully_allocated_invoices': partner_id.excl_fully_allocated_invoices})
                                     if partner_id.statement_period and partner_id.statement_period in ('current_month', 'last_month'):
                                         wiz_date_start = date.replace(day=1) if statement_period == 'current_month' else date.replace(day=1) + relativedelta(months= -1)
