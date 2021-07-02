@@ -66,7 +66,7 @@ class ActivityStatementWizard(models.TransientModel):
                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
                     send_email_to = child_id[0].email if child_id else ''
                     template_obj.email_to = send_email_to
-                    template_obj.subject = (partner_id.company_id.name if partner_id.company_id else '') + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
+                    template_obj.subject = (partner_id.company_id.name if partner_id.company_id else self.env.company.name) + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
                     # template_obj.body_html = """
                     #                         <p>Dear Sir/Madam,</p>
                     #                         <p>Please find attached your account statement. If you have any queries, please feel free to contact us.</p>
@@ -80,7 +80,7 @@ class ActivityStatementWizard(models.TransientModel):
                     pdf = report_template_id._render_qweb_pdf(each)
                     values = base64.b64encode(pdf[0])
                     attachment_id = self.env['ir.attachment'].sudo().create(
-                        {'datas': values, 'name': "Statement_%s.pdf" + str(date.today())})
+                        {'datas': values, 'name': "Statement_%s.pdf" % str(date.today())})
                     template_obj.attachment_ids = attachment_id
                     partner_id.message_post(body=_('Statement %s' % str(date.today())),
                                             attachment_ids=[attachment_id.id])
@@ -110,9 +110,12 @@ class ActivityStatementWizard(models.TransientModel):
                         template_obj = self.env['mail.template'].browse(template_id)
                         partner_list = []
                         if self.env['ir.config_parameter'].sudo().get_param('partner_statement.send_to_options') == 'outstanding_balance_only':
-                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent','=',False), ('customer','=',True), ('statement_email', '=', True)]).filtered(lambda l:(l.credit - l.debit) != 0)])
+                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent', '=', False), ('customer','=',True)]).
+                                                filtered(lambda l:(l.credit - l.debit) != 0 and l.statement_email)])
                         else:
-                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent','=',False),('customer','=',True), ('statement_email', '=', True)])])
+                            partner_list.append([x.id for x in self.env['res.partner'].search([('statement_sent', '=', False),('customer','=',True)]).
+                                                filtered(lambda l: l.statement_email)])
+
                         partner_list = [partner_list[0][:50]]
                         #
                         wiz_id = self.create({'number_partner_ids': len(partner_list)})
@@ -156,8 +159,9 @@ class ActivityStatementWizard(models.TransientModel):
                                     send_email_to = child_id[0].email if child_id else ''
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
                                     template_obj.email_to = send_email_to
-                                    template_obj.subject = partner_id.company_id.name + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
-                                    template_obj.report_name = "Statement "+ str(date.today())
+                                    company_name = partner_id.company_id.name if partner_id.company_id else self.env.company.name
+                                    template_obj.subject = company_name + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
+                                    template_obj.report_name = "Statement " + str(date.today())
                                     if self.env['ir.config_parameter'].sudo().get_param('partner_statement.mode') == "Test":
                                         test_email_address = self.env['ir.config_parameter'].sudo().get_param('partner_statement.test_email_address')
                                         template_obj.email_to = test_email_address
@@ -175,7 +179,7 @@ class ActivityStatementWizard(models.TransientModel):
                                         pdf = report_template_id._render_qweb_pdf(each)
                                         values = base64.b64encode(pdf[0])
                                         attachment_id = self.env['ir.attachment'].sudo().create(
-                                            {'datas': values, 'name': "Statement_%s.pdf" + str(date.today())})
+                                            {'datas': values, 'name': 'Statement_%s.pdf' % str(date.today())})
                                         template_obj.attachment_ids = attachment_id
                                         record_id = template_obj.with_context(partner_ids=[each]).send_mail(wiz_id.id,force_send=True, raise_exception=True)
                                     mail_id = self.env['mail.mail'].browse(record_id)
@@ -228,8 +232,9 @@ class ActivityStatementWizard(models.TransientModel):
 
                                     wiz_id.account_type = 'payable' if (not partner_id.customer and partner_id.supplier) else 'receivable'
                                     template_obj.email_to = send_email_to
-                                    template_obj.subject = (partner_id.company_id.name if partner_id.company_id else '') + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
-                                    template_obj.report_name = "Statement "+ str(date.today())
+                                    template_obj.subject = (partner_id.company_id.name if partner_id.company_id else self.env.company.name) \
+                                                           + ' Customer Statement' + ' (' + (partner_id.ref if partner_id.ref else '') + ')'
+                                    template_obj.report_name = "Statement " + str(date.today())
                                     if self.env['ir.config_parameter'].sudo().get_param('partner_statement.mode') == "Test":
                                         test_email_address = self.env['ir.config_parameter'].sudo().get_param('partner_statement.test_email_address')
                                         template_obj.email_to = test_email_address
@@ -247,7 +252,7 @@ class ActivityStatementWizard(models.TransientModel):
                                         pdf = report_template_id._render_qweb_pdf(each)
                                         values = base64.b64encode(pdf[0])
                                         attachment_id = self.env['ir.attachment'].sudo().create(
-                                            {'datas': values, 'name': "Statement " + str(date.today())})
+                                            {'datas': values, 'name': 'Statement_%s.pdf' % str(date.today())})
                                         template_obj.attachment_ids = attachment_id
                                         record_id = template_obj.with_context(partner_ids=[each]).send_mail(wiz_id.id,force_send=True, raise_exception=True)
                                     mail_id = self.env['mail.mail'].browse(record_id)
