@@ -48,7 +48,7 @@ class ActivityStatementWizard(models.TransientModel):
     def open_activity_statement_wizard(self):
         action = self.env["ir.actions.actions"]._for_xml_id("partner_statement.action_partner_activity_statement")
         action['context'] = {
-            'active_ids': [self._context.get('active_ids')]
+            'active_ids': (self._context.get('active_ids'))
         }
         return action
 
@@ -61,7 +61,7 @@ class ActivityStatementWizard(models.TransientModel):
         if template_id:
             try:
                 template_obj = self.env['mail.template'].browse(template_id)
-                for each in self._context.get('active_ids')[0]:
+                for each in self._context.get('active_ids'):
                     partner_id = self.env['res.partner'].browse(each)
                     child_id = partner_id.child_ids.filtered(lambda x: x.type == 'invoice' and x.email)
                     send_email_to = child_id[0].email if child_id else partner_id.statement_email
