@@ -37,7 +37,7 @@ class StatementCommon(models.AbstractModel):
     aging_type = fields.Selection(
         [("days", "Age by Days"), ("months", "Age by Months")],
         string="Aging Method",
-        default="days",
+        default="months",
         required=True,
     )
 
@@ -62,16 +62,28 @@ class StatementCommon(models.AbstractModel):
 
     def _prepare_statement(self):
         self.ensure_one()
-        return {
-            "date_end": self.date_end,
-            "company_id": self.company_id.id,
-            "partner_ids": self._context["active_ids"],
-            "show_aging_buckets": self.show_aging_buckets,
-            "filter_non_due_partners": self.filter_partners_non_due,
-            "account_type": self.account_type,
-            "aging_type": self.aging_type,
-            "filter_negative_balances": self.filter_negative_balances,
-        }
+        if self.env.context.get('model'):
+            return {
+                "date_end": self.date_end,
+                "company_id": self.company_id.id,
+                "partner_ids": self._context["active_ids"],
+                "show_aging_buckets": True,
+                "filter_non_due_partners": self.filter_partners_non_due,
+                "account_type": self.account_type,
+                "aging_type": 'months',
+                "filter_negative_balances": self.filter_negative_balances,
+            }
+        else:
+            return {
+                "date_end": self.date_end,
+                "company_id": self.company_id.id,
+                "partner_ids": self._context["active_ids"],
+                "show_aging_buckets": self.show_aging_buckets,
+                "filter_non_due_partners": self.filter_partners_non_due,
+                "account_type": self.account_type,
+                "aging_type": self.aging_type,
+                "filter_negative_balances": self.filter_negative_balances,
+            }
 
     def _export(self):
         raise NotImplementedError

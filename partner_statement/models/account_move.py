@@ -5,7 +5,7 @@
 import logging
 
 from odoo import api, fields, models, _
-
+from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 
@@ -31,3 +31,8 @@ class ResPartner(models.Model):
                                          ('last_quarter', 'Last Quarter'),
                                          ('last_month', 'Last Month'), ], default="current_month",
                                         string="Statement Period")
+
+    def update_statement_sent(self):
+        config_id = self.env['ir.config_parameter'].sudo().get_param('partner_statement.cron_next_call_date')
+        if int(config_id) - 1 == datetime.now().day:
+            self.search([('statement_sent', '=', True)]).update({'statement_sent': False})
